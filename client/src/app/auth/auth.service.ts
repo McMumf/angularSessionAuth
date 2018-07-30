@@ -12,21 +12,18 @@ export class AuthService {
   constructor(private http: HttpClient, private router: Router) { }
 
   register(email: string, password: string) {
-    return this.http.post<{token: string}>(this.url+'/register', {email: email, password: password})
+    return this.http.post<{token: string}>(this.url + '/register', {email: email, password: password})
       .pipe(
         map(result => {
-          localStorage.setItem('token', result.token);
           this.router.navigate(['dashboard']);
         })
       );
   }
 
   login(email: string, password: string): Observable<boolean> {
-    return this.http.post<{token: string}>(this.url+'/login', {email: email, password: password})
+    return this.http.post<{token: string}>(this.url + '/login', {email: email, password: password})
       .pipe(
         map(result => {
-          localStorage.setItem('token', result.token);
-          console.log("TOKEN:" + localStorage.getItem('token'));
           return true;
         })
       );

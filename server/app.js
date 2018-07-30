@@ -4,9 +4,22 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-const jwt = require('jsonwebtoken');
-const expressJwt = require('express-jwt');
+var session = require('express-session');
+var passport = require('passport');
+//load passport strategies
+require('./config/passport/passport.js'); // pass passport for configuration
 var cors = require('cors')
+var SQLiteStore = require('connect-sqlite3')(session);
+
+// For MySQL databases
+/*var SessionStore = require('express-mysql-session')(session);
+var options = {
+  host: 'ctdb.coulsontech.net',
+  user: 'iowatchuser',
+  password: 'BangctPass89',
+  database: 'iowatchdb'
+};
+var sessionStore = new SessionStore(options);*/
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -24,6 +37,21 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
+app.use(session({
+  secret: 'why have one keyboard cat when you can have two keyboard cats',
+  store:  new SQLiteStore,
+  resave: true,
+  saveUninitialized: true,
+  cookie: {
+    maxAge:86400000
+  }
+}));
+
+//Passport Init
+app.use(passport.initialize());
+app.use(passport.session());
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
